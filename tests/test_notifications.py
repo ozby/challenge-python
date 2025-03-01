@@ -16,12 +16,12 @@ TEST_PEER_4 = "127.0.0.1:8004"
 
 
 @pytest.fixture(autouse=True)
-async def setup() -> AsyncGenerator[None, None]:
+async def setup(session_service: SessionService) -> AsyncGenerator[None, None]:
     # Setup test users
-    await SessionService().set(TEST_PEER_1, "user1")
-    await SessionService().set(TEST_PEER_2, "user2")
-    await SessionService().set(TEST_PEER_3, "user3")
-    await SessionService().set(TEST_PEER_4, "user4")
+    await session_service.set(TEST_PEER_1, "user1")
+    await session_service.set(TEST_PEER_2, "user2")
+    await session_service.set(TEST_PEER_3, "user3")
+    await session_service.set(TEST_PEER_4, "user4")
     yield
 
 

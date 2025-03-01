@@ -3,7 +3,7 @@ import re
 import string
 from typing import Any
 
-from motor.motor_asyncio import AsyncIOMotorDatabase
+from motor.motor_asyncio import AsyncIOMotorClient
 
 from server.db.entities.discussion import Discussion
 from server.db.entities.reply import Reply
@@ -14,9 +14,9 @@ class DiscussionService:
     MENTION_PATTERN = re.compile(r"(?<!@)@(\w+)(?=[\s,.!?]|$)")
 
     def __init__(
-        self, db: AsyncIOMotorDatabase[Any], notification_service: NotificationService
+        self, mongo_client: AsyncIOMotorClient[Any], notification_service: NotificationService
     ) -> None:
-        self.db = db
+        self.db = mongo_client.synthesia_db
         self.discussions = self.db.discussions
         self.notification_service = notification_service
 

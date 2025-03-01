@@ -18,15 +18,10 @@ TEST_PEER_ID = "127.0.0.1:89899"
 
 
 @pytest.fixture(autouse=True)
-async def client_id() -> AsyncGenerator[str, None]:
+async def client_id(session_service: SessionService) -> AsyncGenerator[str, None]:
     client_id = "tester_client_1"
-    await SessionService().set(TEST_PEER_ID, client_id)
+    await session_service.set(TEST_PEER_ID, client_id)
     yield client_id
-
-
-@pytest.fixture
-def session_service() -> SessionService:
-    return SessionService()
 
 
 def test_create_discussion_validates_params(

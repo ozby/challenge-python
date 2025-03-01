@@ -28,16 +28,20 @@ class Container(containers.DeclarativeContainer):
         ),
     )
 
-    db = providers.Singleton(
-        lambda client, db_name: client[db_name], mongo_client, config.db_name
+    notification_service = providers.Singleton(
+        NotificationService, 
+        mongo_client=mongo_client
     )
 
-    notification_service = providers.Singleton(NotificationService, db=db)
-
-    session_service = providers.Singleton(SessionService)
+    session_service = providers.Singleton(
+        SessionService,
+        mongo_client=mongo_client
+    )
 
     discussion_service = providers.Singleton(
-        DiscussionService, db=db, notification_service=notification_service
+        DiscussionService, 
+        mongo_client=mongo_client, 
+        notification_service=notification_service
     )
 
 

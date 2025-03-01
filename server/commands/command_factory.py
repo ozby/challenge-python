@@ -70,13 +70,3 @@ class CommandFactory:
 
         cls._command_history.append(command)
         return command
-
-    @classmethod
-    def get_last_command(cls) -> Command | None:
-        """Get the last executed command"""
-        return cls._command_history[-1] if cls._command_history else None
-
-    @classmethod
-    def clear_history(cls) -> None:
-        """Clear the command history"""
-        cls._command_history.clear()

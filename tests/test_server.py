@@ -7,11 +7,12 @@ from collections.abc import AsyncGenerator
 import pytest
 
 from server import Server
+from tests.conftest import MockContainer
 
 
 @pytest.fixture
-async def server() -> AsyncGenerator[Server, None]:
-    server = Server(port=0)
+async def server(container: MockContainer) -> AsyncGenerator[Server, None]:
+    server = Server(container=container, port=0)
     task = asyncio.create_task(server.start())
     await asyncio.sleep(0.1)
     try:

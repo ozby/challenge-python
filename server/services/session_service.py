@@ -1,12 +1,14 @@
 import logging
+from typing import Any
 
-from server.db.async_mongo_client import async_mongo_client
+from motor.motor_asyncio import AsyncIOMotorClient
+
 from server.db.entities.session import Session
 
 
 class SessionService:
-    def __init__(self) -> None:
-        self.db = async_mongo_client.db
+    def __init__(self, mongo_client: AsyncIOMotorClient[Any]) -> None:
+        self.db = mongo_client.synthesia_db
         self.sessions = self.db.sessions
 
     async def set(self, peer_id: str, user_id: str) -> None:

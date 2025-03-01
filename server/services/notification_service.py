@@ -2,14 +2,14 @@ import logging
 from datetime import datetime
 from typing import Any
 
-from motor.motor_asyncio import AsyncIOMotorDatabase
+from motor.motor_asyncio import AsyncIOMotorClient
 
 from server.db.entities.notification import Notification, NotificationType
 
 
 class NotificationService:
-    def __init__(self, db: AsyncIOMotorDatabase[Any]) -> None:
-        self.db = db
+    def __init__(self, mongo_client: AsyncIOMotorClient[Any]) -> None:
+        self.db = mongo_client.synthesia_db
         self.notifications = self.db.notifications
 
     async def create_reply_notifications(
