@@ -24,7 +24,7 @@ async def client_id(container: Container) -> AsyncGenerator[str, None]:
 
 async def test_create_discussion_validates_params(container: Container) -> None:
     context = CommandContext(
-        container, "abcdefg", ["ref.123", "test comment"], TEST_PEER_ID
+        container, "abcdefg", ["ref.30s", "test comment"], TEST_PEER_ID
     )
     await CreateDiscussionCommand(context).execute()
 
@@ -35,7 +35,7 @@ async def test_create_discussion_validates_params(container: Container) -> None:
 
     with pytest.raises(ValueError, match="action requires two parameters"):
         await CreateDiscussionCommand(
-            CommandContext(container, "abcdefg", ["ref.123"], TEST_PEER_ID),
+            CommandContext(container, "abcdefg", ["ref.30s"], TEST_PEER_ID),
         ).execute()
 
     with pytest.raises(
@@ -50,7 +50,7 @@ async def test_create_discussion_validates_params(container: Container) -> None:
 
 async def test_create_discussion_executes(container: Container) -> None:
     context = CommandContext(
-        container, "abcdefg", ["ref.123", "test comment"], TEST_PEER_ID
+        container, "abcdefg", ["ref.30s", "test comment"], TEST_PEER_ID
     )
     command = CreateDiscussionCommand(context)
     result = (await command.execute()).rstrip("\n")
@@ -64,7 +64,7 @@ async def test_create_discussion_executes(container: Container) -> None:
 
 async def test_create_reply_executes(container: Container) -> None:
     created = CreateDiscussionCommand(
-        CommandContext(container, "abcdefg", ["ref.123", "test comment"], TEST_PEER_ID),
+        CommandContext(container, "abcdefg", ["ref.30s", "test comment"], TEST_PEER_ID),
     )
     created_discussion_id = (await created.execute()).strip("\n").split("|")[1]
 
@@ -85,7 +85,7 @@ async def test_create_reply_executes(container: Container) -> None:
 
 async def test_create_reply_executes_with_comma(container: Container) -> None:
     created = CreateDiscussionCommand(
-        CommandContext(container, "abcdefg", ["ref.123", "test comment"], TEST_PEER_ID),
+        CommandContext(container, "abcdefg", ["ref.30s", "test comment"], TEST_PEER_ID),
     )
     created_discussion_id = (await created.execute()).strip("\n").split("|")[1]
 
@@ -111,7 +111,7 @@ async def test_get_discussion_executes(
     container: Container,
 ) -> None:
     created = CreateDiscussionCommand(
-        CommandContext(container, "abcdefg", ["ref.123", "test comment"], TEST_PEER_ID),
+        CommandContext(container, "abcdefg", ["ref.30s", "test comment"], TEST_PEER_ID),
     )
     created_discussion_id = (await created.execute()).strip("\n").split("|")[1]
 
@@ -120,13 +120,13 @@ async def test_get_discussion_executes(
     ).execute()
     assert (
         returned_discussion
-        == f"abcdefg|{created_discussion_id}|ref.123|({client_id}|test comment)\n"
+        == f"abcdefg|{created_discussion_id}|ref.30s|({client_id}|test comment)\n"
     )
 
 
 async def test_create_reply_validates_params(container: Container) -> None:
     created = CreateDiscussionCommand(
-        CommandContext(container, "abcdefg", ["ref.123", "test comment"], TEST_PEER_ID),
+        CommandContext(container, "abcdefg", ["ref.30s", "test comment"], TEST_PEER_ID),
     )
     created_discussion_id = (await created.execute()).strip("\n").split("|")[1]
 
@@ -148,7 +148,7 @@ async def test_create_reply_validates_params(container: Container) -> None:
 
 async def test_get_discussion_validates_params(container: Container) -> None:
     created = CreateDiscussionCommand(
-        CommandContext(container, "abcdefg", ["ref.123", "test comment"], TEST_PEER_ID),
+        CommandContext(container, "abcdefg", ["ref.30s", "test comment"], TEST_PEER_ID),
     )
     created_discussion_id = (await created.execute()).strip("\n").split("|")[1]
 

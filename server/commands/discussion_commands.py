@@ -9,9 +9,12 @@ class CreateDiscussionCommand(Command):
         if len(self.context.params) != 2:
             raise ValueError("action requires two parameters")
 
-        reference, _comment = self.context.params[0], self.context.params[1]
+        reference, comment = self.context.params[0], self.context.params[1]
         if not Validator.validate_reference(reference):
             raise ValueError("reference must be period-delimited alphanumeric")
+
+        if len(comment) >= 250:
+            raise ValueError("comment must be less than 250 characters")
 
         self.client_id = await self.container.session_service().get_client_id(
             self.context.peer_id
@@ -71,7 +74,7 @@ class GetDiscussionCommand(Command):
             replies.append(f"{reply.client_id}|{reply.comment}")
         params = [
             discussion.discussion_id,
-            discussion.reference,
+            f"{discussion.reference_prefix}.{discussion.time_marker}",
             "(" + ",".join(replies) + ")",
         ]
         return Response(request_id=self.context.request_id, params=params).serialize()
@@ -93,7 +96,7 @@ class ListDiscussionsCommand(Command):
                 replies.append(f"{reply.client_id}|{reply.comment}")
 
             discussion_list.append(
-                f"{discussion.discussion_id}|{discussion.reference}|({','.join(replies)})"
+                f"{discussion.discussion_id}|{discussion.reference_prefix}.{discussion.time_marker}|({','.join(replies)})"
             )
         return Response(
             request_id=self.context.request_id, params=discussion_list

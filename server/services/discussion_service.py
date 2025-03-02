@@ -41,7 +41,8 @@ class DiscussionService:
     async def create_discussion(
         self, reference: str, comment: str, client_id: str
     ) -> str:
-        reference_prefix = reference.split(".")[0]
+        split = reference.split(".")
+        reference_prefix, time_marker = split[0], split[1]
         discussion_id = "".join(
             random.choices(string.ascii_lowercase + string.digits, k=7)
         )
@@ -49,7 +50,7 @@ class DiscussionService:
         discussion_doc = {
             "discussion_id": discussion_id,
             "reference_prefix": reference_prefix,
-            "reference": reference,
+            "time_marker": time_marker,
             "client_id": client_id,
             "replies": [
                 {"client_id": client_id, "comment": self._sanitize_comment(comment)}
@@ -110,7 +111,7 @@ class DiscussionService:
         return Discussion(
             discussion_id=discussion_doc["discussion_id"],
             reference_prefix=discussion_doc["reference_prefix"],
-            reference=discussion_doc["reference"],
+            time_marker=discussion_doc["time_marker"],
             client_id=discussion_doc["client_id"],
             replies=[Reply(**reply) for reply in discussion_doc["replies"]],
         )
@@ -127,7 +128,7 @@ class DiscussionService:
             Discussion(
                 discussion_id=doc["discussion_id"],
                 reference_prefix=doc["reference_prefix"],
-                reference=doc["reference"],
+                time_marker=doc["time_marker"],
                 client_id=doc["client_id"],
                 replies=[Reply(**reply) for reply in doc["replies"]],
             )
@@ -136,6 +137,3 @@ class DiscussionService:
 
     async def delete_discussion(self, discussion_id: str) -> None:
         await self.discussions.delete_one({"discussion_id": discussion_id})
-
-    async def delete_reply(self, discussion_id: str, reply_id: str) -> None:
-        pass

@@ -11,6 +11,6 @@ class Reply:
 class Discussion:
     discussion_id: str
     reference_prefix: str
-    reference: str
+    time_marker: str
     client_id: str
     replies: list[Reply]
