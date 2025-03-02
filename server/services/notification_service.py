@@ -4,7 +4,7 @@ from typing import Any
 
 from motor.motor_asyncio import AsyncIOMotorClient
 
-from server.db.entities.notification import Notification, NotificationType
+from server.entities.notification import Notification, NotificationType
 
 
 class NotificationService:

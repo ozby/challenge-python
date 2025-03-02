@@ -1,5 +1,7 @@
 from server.validation import Validator
 
+INVALID_REQUEST_ID = "Invalid request_id. Must be 7 lowercase letters (a-z)"
+
 
 class Response:
     def __init__(self, request_id: str, params: list[str] | None = None):
@@ -10,7 +12,7 @@ class Response:
 
     def serialize(self) -> str:
         if not Validator.validate_request_id(self.request_id):
-            raise ValueError("Invalid request_id. Must be 7 lowercase letters (a-z)")
+            raise ValueError(INVALID_REQUEST_ID)
 
         parts = [self.request_id]
         if len(self.params) > 0:
@@ -20,6 +22,6 @@ class Response:
 
     def serialize_list(self) -> str:
         if not Validator.validate_request_id(self.request_id):
-            raise ValueError("Invalid request_id. Must be 7 lowercase letters (a-z)")
+            raise ValueError(INVALID_REQUEST_ID)
 
         return self.request_id + "|(" + ",".join(self.params) + ")\n"

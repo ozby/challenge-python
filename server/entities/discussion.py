@@ -1,6 +1,10 @@
 from dataclasses import dataclass
 
-from server.db.entities.reply import Reply
+
+@dataclass
+class Reply:
+    client_id: str
+    comment: str
 
 
 @dataclass

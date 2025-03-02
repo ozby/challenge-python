@@ -5,8 +5,7 @@ from typing import Any
 
 from motor.motor_asyncio import AsyncIOMotorClient
 
-from server.db.entities.discussion import Discussion
-from server.db.entities.reply import Reply
+from server.entities.discussion import Discussion, Reply
 from server.services.notification_service import NotificationService
 
 

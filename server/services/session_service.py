@@ -3,7 +3,7 @@ from typing import Any
 
 from motor.motor_asyncio import AsyncIOMotorClient
 
-from server.db.entities.session import Session
+from server.entities.session import Session
 
 
 class SessionService:

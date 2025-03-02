@@ -2,10 +2,10 @@
 
 import asyncio
 
-from server.server import run_server
+from server.server import logger, run_server
 
 if __name__ == "__main__":
     try:
         asyncio.run(run_server())
     except KeyboardInterrupt:
-        print("\nServer stopped by user")
+        logger.warning("Server stopped by user")

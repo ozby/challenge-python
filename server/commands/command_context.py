@@ -10,13 +10,13 @@ class CommandContext:
         self,
         container: Container,
         request_id: str,
-        params: list[str],
+        params: list[str] | None = None,
         peer_id: str | None = None,
         action: str | None = None,
     ):
         self.container = container
         self.request_id = request_id
-        self.params = params
+        self.params = params or []
         self.peer_id = peer_id
         self.action = action
 

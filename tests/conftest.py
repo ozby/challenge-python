@@ -21,16 +21,7 @@ def container() -> Generator[Container, None, None]:
 
     yield container
 
-    # Reset overrides after tests
     container.mongo_client.reset_override()
-
-
-# @pytest.fixture(autouse=True)
-# async def client_id(container: Container) -> AsyncGenerator[str, None]:
-#     session_service = container.session_service()
-#     client_id = "tester_client_1"
-#     await session_service.get(TEST_PEER_ID, client_id)
-#     yield client_id
 
 
 @pytest.fixture(autouse=True)

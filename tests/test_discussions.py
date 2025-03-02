@@ -223,3 +223,27 @@ async def test_list_discussion_executes(container: Container) -> None:
     await ListDiscussionsCommand(
         CommandContext(container, "abcdefg", [], TEST_PEER_ID),
     ).execute()
+
+    # with pytest.raises(ValueError):
+    #     CommandContext.from_line(container, "cadlsdo|INVALID")
+
+    # with pytest.raises(ValueError):
+    #     CommandContext.from_line(container, "abcdefg|SIGN_IN")
+
+    # with pytest.raises(ValueError):
+    #     CommandContext.from_line(container, "abcdefg|SIGN_IN|invalid@id")
+
+    # with pytest.raises(ValueError):
+    #     CommandContext.from_line(container, "abcdefg|SIGN_IN|invalid id")
+
+    # with pytest.raises(ValueError):
+    #     CommandContext.from_line(container, "abcdefg|SIGN_IN|")
+
+    # with pytest.raises(ValueError):
+    #     CommandContext.from_line(container, "ykkngzx|CREATE_DISCUSSION|iofetzv.0s")
+
+    # with pytest.raises(ValueError):
+    #     CommandContext.from_line(container, "ykkngzx|CREATE_DISCUSSION|iofetzv.0s|")
+
+    # with pytest.raises(ValueError):
+    #     CommandContext.from_line(container, "ykkngzx|CREATE_DISCUSSION|iofetzv|zaaa")

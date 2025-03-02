@@ -3,8 +3,6 @@
 import asyncio
 import logging
 
-import motor
-
 from server.commands.command_context import CommandContext
 from server.commands.command_factory import CommandFactory
 from server.di import Container
@@ -13,6 +11,8 @@ logger = logging.getLogger(__name__)
 
 
 class Server:
+    _server: asyncio.AbstractServer
+
     def __init__(
         self,
         container: Container,
@@ -21,7 +21,6 @@ class Server:
     ) -> None:
         self.host = host
         self.port = port
-        self._server: asyncio.AbstractServer
         self._notification_task: asyncio.Task[None] | None = None
         self._peer_writers: dict[str, asyncio.StreamWriter] = {}
 
@@ -33,21 +32,28 @@ class Server:
     async def _watch_notifications(self) -> None:
         """Single watcher for all notifications"""
         try:
-            print("watching notifications")
+            logger.info("watching notifications")
             client = self.mongo_client
             collection = client.synthesia_db.notifications
-            async with collection.watch([{'$match': {'operationType': 'insert'}}]) as stream:
+            async with collection.watch(
+                [{"$match": {"operationType": "insert"}}]
+            ) as stream:
                 async for change in stream:
                     try:
-                        notification = change['fullDocument']
-                        print("notification: ", notification)
-                        recipient_id = change['fullDocument']['recipient_id']
+                        notification = change["fullDocument"]
+                        logger.info(f"notification: {notification}")
+                        recipient_id = change["fullDocument"]["recipient_id"]
                         peer_id = self.session_service.get_by_user_id(recipient_id)
-                        peer_writer = self._peer_writers.get(peer_id)
-                        if (peer_writer is None):
+                        if peer_id is None:
+                            logger.info(f"User is offline: {recipient_id}")
+                            continue
+                        peer_writer = self._peer_writers.get(peer_id)  # type: ignore
+                        if peer_writer is None:
                             logger.info(f"User is offline: {peer_id}")
                             continue
-                        message = f"DISCUSSION_UPDATED|{notification['discussion_id']}\n"
+                        message = (
+                            f"DISCUSSION_UPDATED|{notification['discussion_id']}\n"
+                        )
                         logger.info(f"Notification sending to {peer_id}: {message}")
                         peer_writer.write(message.encode())
                         logger.info(f"Notification sent to {peer_id}")

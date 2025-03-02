@@ -3,8 +3,8 @@ from collections.abc import AsyncGenerator
 
 import pytest
 
-from server.db.entities.notification import NotificationType
 from server.di import Container
+from server.entities.notification import NotificationType
 
 # Test data
 TEST_PEER_1 = "127.0.0.1:8001"
