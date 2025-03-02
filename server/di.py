@@ -29,25 +29,13 @@ class Container(containers.DeclarativeContainer):
     )
 
     notification_service = providers.Singleton(
-        NotificationService, 
-        mongo_client=mongo_client
+        NotificationService, mongo_client=mongo_client
     )
 
-    session_service = providers.Singleton(
-        SessionService,
-        mongo_client=mongo_client
-    )
+    session_service = providers.Singleton(SessionService, mongo_client=mongo_client)
 
     discussion_service = providers.Singleton(
-        DiscussionService, 
-        mongo_client=mongo_client, 
-        notification_service=notification_service
+        DiscussionService,
+        mongo_client=mongo_client,
+        notification_service=notification_service,
     )
-
-
-container = Container()
-
-
-def get_container() -> Container:
-    """Returns the container instance."""
-    return container

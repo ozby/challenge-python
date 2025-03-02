@@ -1,7 +1,6 @@
-import sys
 from typing import Any
 
-from mongomock_motor import AsyncMongoMockClient, AsyncMongoMockDatabase  # type: ignore
+from mongomock_motor import AsyncMongoMockClient  # type: ignore
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
 
 
@@ -10,14 +9,8 @@ class AsyncMongoClient:
         self.client: (
             AsyncMongoMockClient[dict[str, Any]] | AsyncIOMotorClient[dict[str, Any]]
         )
-        if "pytest" in sys.modules:
-            self.client = AsyncMongoMockClient()
-        else:
-            self.client = AsyncIOMotorClient("mongodb://localhost:27017")
-        self.db: (
-            AsyncIOMotorDatabase[dict[str, Any]]
-            | AsyncMongoMockDatabase[dict[str, Any]]
-        ) = self.client.synthesia_db
+        self.client = AsyncIOMotorClient("mongodb://localhost:27017")
+        self.db: AsyncIOMotorDatabase[dict[str, Any]] = self.client.synthesia_db
 
     def close(self) -> None:
         """Close the MongoDB connection"""

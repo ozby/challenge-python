@@ -13,13 +13,15 @@ class TestValidator(unittest.TestCase):
         self.assertFalse(Validator.validate_request_id("abc123"))  # numbers not allowed
 
     def test_validate_client_id(self) -> None:
-        self.assertTrue(Validator.validate_client_id("janedoe"))
-        self.assertTrue(Validator.validate_client_id("jane123"))
-        self.assertTrue(Validator.validate_client_id("JANE123"))
+        self.assertTrue(Validator.validate_alphanumeric("janedoe"))
+        self.assertTrue(Validator.validate_alphanumeric("jane123"))
+        self.assertTrue(Validator.validate_alphanumeric("JANE123"))
 
-        self.assertFalse(Validator.validate_client_id("jane@doe"))
-        self.assertFalse(Validator.validate_client_id("jane doe"))  # spaces not allowed
-        self.assertFalse(Validator.validate_client_id(""))  # empty not allowed
+        self.assertFalse(Validator.validate_alphanumeric("jane@doe"))
+        self.assertFalse(
+            Validator.validate_alphanumeric("jane doe")
+        )  # spaces not allowed
+        self.assertFalse(Validator.validate_alphanumeric(""))  # empty not allowed
 
     def test_validate_reference(self) -> None:
         self.assertTrue(Validator.validate_reference("xqunqcc.1m30s"))

@@ -3,10 +3,11 @@
 import asyncio
 import logging
 
-from server.commands.command import CommandContext
+import motor
+
+from server.commands.command_context import CommandContext
 from server.commands.command_factory import CommandFactory
-from server.di import Container, get_container
-from server.request import Request
+from server.di import Container
 
 logger = logging.getLogger(__name__)
 
@@ -14,18 +15,17 @@ logger = logging.getLogger(__name__)
 class Server:
     def __init__(
         self,
-        container: Container | None = None,
+        container: Container,
         host: str = "0.0.0.0",
         port: int = 8989,
     ) -> None:
         self.host = host
         self.port = port
-        self._server: asyncio.AbstractServer | None = None
+        self._server: asyncio.AbstractServer
         self._notification_task: asyncio.Task[None] | None = None
         self._peer_writers: dict[str, asyncio.StreamWriter] = {}
-        self._running = False
 
-        self.container = container or get_container()
+        self.container = container
         self.session_service = self.container.session_service()
         self.notification_service = self.container.notification_service()
         self.mongo_client = self.container.mongo_client()
@@ -33,37 +33,29 @@ class Server:
     async def _watch_notifications(self) -> None:
         """Single watcher for all notifications"""
         try:
-            logger.info("Starting notification watcher")
-            collection = self.mongo_client.db.notifications
-
-            pipeline = [{"$match": {"operationType": "insert"}}]
-
-            async with collection.watch(pipeline) as stream:
-                while self._running:
+            print("watching notifications")
+            client = self.mongo_client
+            collection = client.synthesia_db.notifications
+            async with collection.watch([{'$match': {'operationType': 'insert'}}]) as stream:
+                async for change in stream:
                     try:
-                        change = await stream.try_next()
-                        if change is None:
-                            await asyncio.sleep(0.1)
+                        notification = change['fullDocument']
+                        print("notification: ", notification)
+                        recipient_id = change['fullDocument']['recipient_id']
+                        peer_id = self.session_service.get_by_user_id(recipient_id)
+                        peer_writer = self._peer_writers.get(peer_id)
+                        if (peer_writer is None):
+                            logger.info(f"User is offline: {peer_id}")
                             continue
-
-                        notification = change["fullDocument"]
-                        logger.info("Received notification: %s", notification)
-                        recipient_id = notification["recipient_id"]
-                        peer_id = await self.session_service.get_by_user_id(
-                            recipient_id
-                        )
-                        if peer_id is not None:
-                            await self._send_to_peer(peer_id, notification)
-                        else:
-                            logger.info(f"No peer ID found for user: {recipient_id}")
+                        message = f"DISCUSSION_UPDATED|{notification['discussion_id']}\n"
+                        logger.info(f"Notification sending to {peer_id}: {message}")
+                        peer_writer.write(message.encode())
+                        logger.info(f"Notification sent to {peer_id}")
+                        await peer_writer.drain()
                     except Exception as e:
-                        if not self._running:
-                            break
-                        logger.error(f"Error processing notification: {e}")
-                        await asyncio.sleep(1)
+                        logger.error(f"Error sending notification to {peer_id}: {e}")
         except Exception as e:
-            if self._running:
-                logger.error(f"Notification watcher error: {e}")
+            logger.error(f"{e}")
 
     async def _send_to_peer(self, peer_id: str, message: str) -> None:
         """Send a message to a specific peer if they are connected."""
@@ -71,7 +63,7 @@ class Server:
         if peer_writer is None:
             logger.info("User is offline: %s", peer_id)
             return
-            
+
         logger.info("Sending message to %s: %s", peer_id, message)
         peer_writer.write(message.encode())
         await peer_writer.drain()
@@ -91,17 +83,10 @@ class Server:
                 if not data:
                     break
 
-                logger.info("Received %r from %s", data.decode(), peer_id)
-                parsed_command = Request.from_line(data.decode(), peer_id)
-                logger.info("parsed_command: %s", parsed_command)
-
-                context = CommandContext(request_id=parsed_command.request_id, params=parsed_command.params, peer_id=parsed_command)
-                command = CommandFactory.create_command(
-                    parsed_command.action,
-                    parsed_command.request_id,
-                    parsed_command.params,
-                    peer_id,
+                context = CommandContext.from_line(
+                    self.container, data.decode(), peer_id
                 )
+                command = CommandFactory.create_command(context)
                 response = await command.execute()
                 logger.info("response: %s", response)
 
@@ -125,11 +110,10 @@ class Server:
             self.port,
         )
 
-        self._running = True
         self._notification_task = asyncio.create_task(self._watch_notifications())
-        
+
         # For testing, the container might not have a config attribute
-        db_name = getattr(self.container, 'config', {}).get('db_name', 'synthesia_db')
+        db_name = getattr(self.container, "config", {}).get("db_name", "synthesia_db")
         logger.info(f"Using database: {db_name}")
 
         logger.info("Server starting on %s:%d", self.host, self.port)
@@ -138,7 +122,6 @@ class Server:
 
     async def stop(self) -> None:
         logger.info("Stopping server...")
-        self._running = False
 
         if self._server:
             self._server.close()
@@ -152,7 +135,7 @@ async def run_server() -> None:
         level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
     )
 
-    server = Server()
+    server = Server(container=Container())
     try:
         await server.start()
     except KeyboardInterrupt:

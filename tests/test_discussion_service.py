@@ -1,10 +1,11 @@
 import pytest
 
-from server.services.discussion_service import DiscussionService
+from server.di import Container
 
 
 @pytest.mark.asyncio
-async def test_create_discussion(discussion_service: DiscussionService) -> None:
+async def test_create_discussion(container: Container) -> None:
+    discussion_service = container.discussion_service()
     discussion_id = await discussion_service.create_discussion(
         reference="test.123", comment="Test comment", client_id="user1"
     )
@@ -18,7 +19,8 @@ async def test_create_discussion(discussion_service: DiscussionService) -> None:
 
 
 @pytest.mark.asyncio
-async def test_create_reply(discussion_service: DiscussionService) -> None:
+async def test_create_reply(container: Container) -> None:
+    discussion_service = container.discussion_service()
     discussion_id = await discussion_service.create_discussion(
         reference="test.123", comment="Initial comment", client_id="user1"
     )
@@ -36,7 +38,8 @@ async def test_create_reply(discussion_service: DiscussionService) -> None:
 
 
 @pytest.mark.asyncio
-async def test_list_discussions(discussion_service: DiscussionService) -> None:
+async def test_list_discussions(container: Container) -> None:
+    discussion_service = container.discussion_service()
     # Create discussions with different prefixes
     await discussion_service.create_discussion("test1.123", "Comment 1", "user1")
     await discussion_service.create_discussion("test1.456", "Comment 2", "user1")
@@ -54,7 +57,8 @@ async def test_list_discussions(discussion_service: DiscussionService) -> None:
 
 
 @pytest.mark.asyncio
-async def test_get_discussion(discussion_service: DiscussionService) -> None:
+async def test_get_discussion(container: Container) -> None:
+    discussion_service = container.discussion_service()
     discussion_id = await discussion_service.create_discussion(
         "ref.123", "test comment 3", "user1"
     )

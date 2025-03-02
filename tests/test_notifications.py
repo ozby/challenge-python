@@ -4,9 +4,7 @@ from collections.abc import AsyncGenerator
 import pytest
 
 from server.db.entities.notification import NotificationType
-from server.services.discussion_service import DiscussionService
-from server.services.notification_service import NotificationService
-from server.services.session_service import SessionService
+from server.di import Container
 
 # Test data
 TEST_PEER_1 = "127.0.0.1:8001"
@@ -16,7 +14,8 @@ TEST_PEER_4 = "127.0.0.1:8004"
 
 
 @pytest.fixture(autouse=True)
-async def setup(session_service: SessionService) -> AsyncGenerator[None, None]:
+async def setup(container: Container) -> AsyncGenerator[None, None]:
+    session_service = container.session_service()
     # Setup test users
     await session_service.set(TEST_PEER_1, "user1")
     await session_service.set(TEST_PEER_2, "user2")
@@ -26,9 +25,9 @@ async def setup(session_service: SessionService) -> AsyncGenerator[None, None]:
 
 
 @pytest.mark.asyncio
-async def test_reply_notifications(
-    discussion_service: DiscussionService, notification_service: NotificationService
-) -> None:
+async def test_reply_notifications(container: Container) -> None:
+    discussion_service = container.discussion_service()
+    notification_service = container.notification_service()
     # Create initial discussion by user1
     discussion_id = await discussion_service.create_discussion(
         reference="test.123", comment="Initial discussion", client_id="user1"
@@ -62,9 +61,9 @@ async def test_reply_notifications(
 
 
 @pytest.mark.asyncio
-async def test_mention_notifications(
-    discussion_service: DiscussionService, notification_service: NotificationService
-) -> None:
+async def test_mention_notifications(container: Container) -> None:
+    discussion_service = container.discussion_service()
+    notification_service = container.notification_service()
     # Create discussion with mentions
     await discussion_service.create_discussion(
         reference="test.456",
@@ -88,9 +87,9 @@ async def test_mention_notifications(
 
 
 @pytest.mark.asyncio
-async def test_combined_reply_and_mention_notifications(
-    discussion_service: DiscussionService, notification_service: NotificationService
-) -> None:
+async def test_combined_reply_and_mention_notifications(container: Container) -> None:
+    discussion_service = container.discussion_service()
+    notification_service = container.notification_service()
     # User1 creates discussion mentioning user4
     discussion_id = await discussion_service.create_discussion(
         reference="test.789",
@@ -124,9 +123,9 @@ async def test_combined_reply_and_mention_notifications(
 
 
 @pytest.mark.asyncio
-async def test_self_mention_and_reply(
-    discussion_service: DiscussionService, notification_service: NotificationService
-) -> None:
+async def test_self_mention_and_reply(container: Container) -> None:
+    discussion_service = container.discussion_service()
+    notification_service = container.notification_service()
     # User1 creates discussion mentioning themselves
     discussion_id = await discussion_service.create_discussion(
         reference="test.self",
@@ -151,9 +150,9 @@ async def test_self_mention_and_reply(
 
 
 @pytest.mark.asyncio
-async def test_mark_notifications_as_read(
-    discussion_service: DiscussionService, notification_service: NotificationService
-) -> None:
+async def test_mark_notifications_as_read(container: Container) -> None:
+    discussion_service = container.discussion_service()
+    notification_service = container.notification_service()
     # Create discussion with mentions and replies
     discussion_id = await discussion_service.create_discussion(
         reference="test.123", comment="Hey @user2, check this out!", client_id="user1"
@@ -185,9 +184,9 @@ async def test_mark_notifications_as_read(
 
 
 @pytest.mark.asyncio
-async def test_notification_ordering(
-    discussion_service: DiscussionService, notification_service: NotificationService
-) -> None:
+async def test_notification_ordering(container: Container) -> None:
+    discussion_service = container.discussion_service()
+    notification_service = container.notification_service()
     # Create discussion
     discussion_id = await discussion_service.create_discussion(
         reference="test.123",
@@ -220,9 +219,9 @@ async def test_notification_ordering(
 
 
 @pytest.mark.asyncio
-async def test_invalid_mentions(
-    discussion_service: DiscussionService, notification_service: NotificationService
-) -> None:
+async def test_invalid_mentions(container: Container) -> None:
+    discussion_service = container.discussion_service()
+    notification_service = container.notification_service()
     # Test mentions with various edge cases
     await discussion_service.create_discussion(
         reference="test.123",
@@ -244,9 +243,9 @@ async def test_invalid_mentions(
 
 
 @pytest.mark.asyncio
-async def test_duplicate_mentions(
-    discussion_service: DiscussionService, notification_service: NotificationService
-) -> None:
+async def test_duplicate_mentions(container: Container) -> None:
+    discussion_service = container.discussion_service()
+    notification_service = container.notification_service()
     # Create discussion with duplicate mentions
     await discussion_service.create_discussion(
         reference="test.123",
@@ -260,9 +259,9 @@ async def test_duplicate_mentions(
 
 
 @pytest.mark.asyncio
-async def test_mention_in_reply_to_own_discussion(
-    discussion_service: DiscussionService, notification_service: NotificationService
-) -> None:
+async def test_mention_in_reply_to_own_discussion(container: Container) -> None:
+    discussion_service = container.discussion_service()
+    notification_service = container.notification_service()
     # User1 creates discussion
     discussion_id = await discussion_service.create_discussion(
         reference="test.123", comment="Initial discussion", client_id="user1"
@@ -286,9 +285,9 @@ async def test_mention_in_reply_to_own_discussion(
 
 
 @pytest.mark.asyncio
-async def test_performance_many_notifications(
-    discussion_service: DiscussionService, notification_service: NotificationService
-) -> None:
+async def test_performance_many_notifications(container: Container) -> None:
+    discussion_service = container.discussion_service()
+    notification_service = container.notification_service()
     # Create discussion
     discussion_id = await discussion_service.create_discussion(
         reference="test.123", comment="Initial discussion", client_id="user1"
@@ -311,9 +310,9 @@ async def test_performance_many_notifications(
 
 
 @pytest.mark.asyncio
-async def test_mark_all_as_read(
-    discussion_service: DiscussionService, notification_service: NotificationService
-) -> None:
+async def test_mark_all_as_read(container: Container) -> None:
+    discussion_service = container.discussion_service()
+    notification_service = container.notification_service()
     # Create multiple discussions with notifications
     discussion_id1 = await discussion_service.create_discussion(
         reference="test.123",
@@ -337,9 +336,9 @@ async def test_mark_all_as_read(
 
 
 @pytest.mark.asyncio
-async def test_notification_after_mark_as_read(
-    discussion_service: DiscussionService, notification_service: NotificationService
-) -> None:
+async def test_notification_after_mark_as_read(container: Container) -> None:
+    discussion_service = container.discussion_service()
+    notification_service = container.notification_service()
     # Create discussion
     discussion_id = await discussion_service.create_discussion(
         reference="test.123",

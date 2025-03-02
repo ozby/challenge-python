@@ -1,32 +1,28 @@
-from abc import ABC, abstractmethod
-from dataclasses import dataclass
+from abc import abstractmethod
+from typing import final
+
+from server.commands.command_context import CommandContext
+
+MIN_PART = 2
 
 
-@dataclass
-class CommandContext:
-    request_id: str
-    params: list[str]
-    peer_id: str | None = None
-
-
-class Command(ABC):
+class Command:
     def __init__(self, context: CommandContext):
         self.context = context
-        self.validate_sync()
-
-    @abstractmethod
-    def validate_sync(self) -> None:
-        """Synchronous validation that can be called from __init__
-        Derived classes with async validation should override this to do basic checks
-        and implement full validation in _validate"""
-        pass
+        self.container = context.container
 
     @abstractmethod
     async def _validate(self) -> None:
-        """Validate the command parameters before execution"""
+        """validation logic to be implemented by derived classes"""
         pass
 
     @abstractmethod
-    async def execute(self) -> str:
-        """Execute the command and return the result"""
+    async def _execute_impl(self) -> str:
+        """execution logic to be implemented by derived classes"""
         pass
+
+    @final
+    async def execute(self) -> str:
+        """Final method that executes validation before implementation"""
+        await self._validate()
+        return await self._execute_impl()

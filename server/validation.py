@@ -10,7 +10,7 @@ class Validator:
         return bool(cls.REQUEST_ID_PATTERN.match(request_id))
 
     @classmethod
-    def validate_client_id(cls, client_id: str) -> bool:
+    def validate_alphanumeric(cls, client_id: str) -> bool:
         return bool(cls.ALPHANUMERIC_PATTERN.match(client_id))
 
     @classmethod
@@ -19,4 +19,4 @@ class Validator:
         if len(parts) != 2:
             return False
 
-        return all(bool(cls.ALPHANUMERIC_PATTERN.match(part)) for part in parts)
+        return all(cls.validate_alphanumeric(part) for part in parts)

@@ -14,7 +14,9 @@ class DiscussionService:
     MENTION_PATTERN = re.compile(r"(?<!@)@(\w+)(?=[\s,.!?]|$)")
 
     def __init__(
-        self, mongo_client: AsyncIOMotorClient[Any], notification_service: NotificationService
+        self,
+        mongo_client: AsyncIOMotorClient[Any],
+        notification_service: NotificationService,
     ) -> None:
         self.db = mongo_client.synthesia_db
         self.discussions = self.db.discussions

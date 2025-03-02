@@ -1,29 +1,29 @@
-import logging
-
-from server.commands.command_factory import CommandFactory
+from server.di import Container
 from server.validation import Validator
 
 MIN_PART = 2
 
 
-class Request:
+class CommandContext:
 
     def __init__(
         self,
+        container: Container,
         request_id: str,
-        action: str,
-        params: list[str] | None = None,
+        params: list[str],
         peer_id: str | None = None,
+        action: str | None = None,
     ):
-        if params is None:
-            params = []
+        self.container = container
         self.request_id = request_id
-        self.action = action
         self.params = params
         self.peer_id = peer_id
+        self.action = action
 
     @staticmethod
-    def from_line(line: str, peer_id: str | None = None) -> "Request":
+    def from_line(
+        container: Container, line: str, peer_id: str | None = None
+    ) -> "CommandContext":
         parts = [part for part in line.strip().split("|") if part]
 
         if len(parts) < MIN_PART:
@@ -33,11 +33,7 @@ class Request:
         if not Validator.validate_request_id(request_id):
             raise ValueError("Invalid request_id. Must be 7 lowercase letters (a-z)")
 
-        logging.info(f"parts: {parts}")
         action = parts[1]
         params = parts[2:] if len(parts) >= MIN_PART else []
-        logging.info(f"params: {params}")
 
-        CommandFactory.create_command(action, request_id, params, peer_id)
-
-        return Request(request_id, action, params, peer_id)
+        return CommandContext(container, request_id, params, peer_id, action)
