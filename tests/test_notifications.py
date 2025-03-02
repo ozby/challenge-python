@@ -30,7 +30,7 @@ async def test_reply_notifications(container: Container) -> None:
     notification_service = container.notification_service()
     # Create initial discussion by user1
     discussion_id = await discussion_service.create_discussion(
-        reference="test.123", comment="Initial discussion", client_id="user1"
+        reference="test.33s", comment="Initial discussion", client_id="user1"
     )
 
     # User2 replies
@@ -155,7 +155,7 @@ async def test_mark_notifications_as_read(container: Container) -> None:
     notification_service = container.notification_service()
     # Create discussion with mentions and replies
     discussion_id = await discussion_service.create_discussion(
-        reference="test.123", comment="Hey @user2, check this out!", client_id="user1"
+        reference="test.33s", comment="Hey @user2, check this out!", client_id="user1"
     )
 
     await discussion_service.create_reply(
@@ -189,7 +189,7 @@ async def test_notification_ordering(container: Container) -> None:
     notification_service = container.notification_service()
     # Create discussion
     discussion_id = await discussion_service.create_discussion(
-        reference="test.123",
+        reference="test.33s",
         comment="Initial discussion mentioning @user2",
         client_id="user1",
     )
@@ -224,7 +224,7 @@ async def test_invalid_mentions(container: Container) -> None:
     notification_service = container.notification_service()
     # Test mentions with various edge cases
     await discussion_service.create_discussion(
-        reference="test.123",
+        reference="test.33s",
         comment="""
         @user2, @user3@invalid @not_a_user
         @@user4 @@ @
@@ -248,7 +248,7 @@ async def test_duplicate_mentions(container: Container) -> None:
     notification_service = container.notification_service()
     # Create discussion with duplicate mentions
     await discussion_service.create_discussion(
-        reference="test.123",
+        reference="test.33s",
         comment="Hey @user2 @user2 @user2, multiple mentions!",
         client_id="user1",
     )
@@ -264,7 +264,7 @@ async def test_mention_in_reply_to_own_discussion(container: Container) -> None:
     notification_service = container.notification_service()
     # User1 creates discussion
     discussion_id = await discussion_service.create_discussion(
-        reference="test.123", comment="Initial discussion", client_id="user1"
+        reference="test.33s", comment="Initial discussion", client_id="user1"
     )
 
     # User1 replies to their own discussion mentioning others
@@ -290,7 +290,7 @@ async def test_performance_many_notifications(container: Container) -> None:
     notification_service = container.notification_service()
     # Create discussion
     discussion_id = await discussion_service.create_discussion(
-        reference="test.123", comment="Initial discussion", client_id="user1"
+        reference="test.33s", comment="Initial discussion", client_id="user1"
     )
 
     # Add many replies (testing bulk notification creation)
@@ -315,7 +315,7 @@ async def test_mark_all_as_read(container: Container) -> None:
     notification_service = container.notification_service()
     # Create multiple discussions with notifications
     discussion_id1 = await discussion_service.create_discussion(
-        reference="test.123",
+        reference="test.33s",
         comment="First discussion mentioning @user2",
         client_id="user1",
     )
@@ -341,7 +341,7 @@ async def test_notification_after_mark_as_read(container: Container) -> None:
     notification_service = container.notification_service()
     # Create discussion
     discussion_id = await discussion_service.create_discussion(
-        reference="test.123",
+        reference="test.33s",
         comment="Initial discussion mentioning @user2",
         client_id="user1",
     )

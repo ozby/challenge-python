@@ -1,6 +1,6 @@
 from server.commands.command import Command
 from server.response import Response
-from server.validation import Validator
+from server.services.validation_service import Validator
 
 
 class SignInCommand(Command):

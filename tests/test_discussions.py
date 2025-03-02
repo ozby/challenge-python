@@ -10,7 +10,7 @@ from server.commands.discussion_commands import (
     ListDiscussionsCommand,
 )
 from server.di import Container
-from server.validation import Validator
+from server.services.validation_service import Validator
 from tests.conftest import TEST_PEER_ID
 
 

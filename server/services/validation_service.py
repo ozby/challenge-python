@@ -19,4 +19,7 @@ class Validator:
         if len(parts) != 2:
             return False
 
-        return all(cls.validate_alphanumeric(part) for part in parts)
+        if not cls.validate_alphanumeric(parts[0]):
+            return False
+        time_pattern = compile(r"^(?:\d+m)?(?:\d+s)$")
+        return bool(time_pattern.match(parts[1]))

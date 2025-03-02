@@ -1,4 +1,4 @@
-from server.validation import Validator
+from server.services.validation_service import Validator
 
 INVALID_REQUEST_ID = "Invalid request_id. Must be 7 lowercase letters (a-z)"
 

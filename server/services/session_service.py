@@ -1,3 +1,4 @@
+from datetime import datetime
 import logging
 from typing import Any
 
@@ -13,7 +14,7 @@ class SessionService:
 
     async def set(self, peer_id: str, user_id: str) -> None:
         logging.info(f"Setting session for {peer_id} to {user_id}")
-        session_doc = {"peer_id": peer_id, "user_id": user_id}
+        session_doc = {"peer_id": peer_id, "user_id": user_id, "created_at": datetime.now()}
         await self.sessions.update_one(
             {"peer_id": peer_id}, {"$set": session_doc}, upsert=True
         )

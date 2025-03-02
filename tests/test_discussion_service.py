@@ -23,7 +23,7 @@ async def test_create_discussion(container: Container) -> None:
 async def test_create_reply(container: Container) -> None:
     discussion_service = container.discussion_service()
     discussion_id = await discussion_service.create_discussion(
-        reference="test.123", comment="Initial comment", client_id="user1"
+        reference="test.33s", comment="Initial comment", client_id="user1"
     )
 
     # Add reply

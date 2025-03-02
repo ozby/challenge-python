@@ -1,5 +1,5 @@
 from server.di import Container
-from server.validation import Validator
+from server.services.validation_service import Validator
 
 MIN_PART = 2
 

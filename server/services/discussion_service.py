@@ -1,6 +1,7 @@
 import random
 import re
 import string
+from datetime import datetime
 from typing import Any
 
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -52,8 +53,13 @@ class DiscussionService:
             "reference_prefix": reference_prefix,
             "time_marker": time_marker,
             "client_id": client_id,
+            "created_at": datetime.now(),
             "replies": [
-                {"client_id": client_id, "comment": self._sanitize_comment(comment)}
+                {
+                    "client_id": client_id,
+                    "comment": self._sanitize_comment(comment),
+                    "created_at": datetime.now(),
+                }
             ],
         }
 
@@ -80,7 +86,11 @@ class DiscussionService:
 
         participants = self._get_unique_participants(discussion_doc) - {client_id}
 
-        new_reply = {"client_id": client_id, "comment": self._sanitize_comment(comment)}
+        new_reply = {
+            "client_id": client_id,
+            "comment": self._sanitize_comment(comment),
+            "created_at": datetime.now(),
+        }
         await self.discussions.update_one(
             {"discussion_id": discussion_id}, {"$push": {"replies": new_reply}}
         )
@@ -113,6 +123,7 @@ class DiscussionService:
             reference_prefix=discussion_doc["reference_prefix"],
             time_marker=discussion_doc["time_marker"],
             client_id=discussion_doc["client_id"],
+            created_at=discussion_doc["created_at"],
             replies=[Reply(**reply) for reply in discussion_doc["replies"]],
         )
 
@@ -130,10 +141,8 @@ class DiscussionService:
                 reference_prefix=doc["reference_prefix"],
                 time_marker=doc["time_marker"],
                 client_id=doc["client_id"],
+                created_at=doc["created_at"],
                 replies=[Reply(**reply) for reply in doc["replies"]],
             )
             for doc in discussion_docs
         ]
-
-    async def delete_discussion(self, discussion_id: str) -> None:
-        await self.discussions.delete_one({"discussion_id": discussion_id})

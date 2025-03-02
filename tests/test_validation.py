@@ -1,6 +1,6 @@
 import unittest
 
-from server.validation import Validator
+from server.services.validation_service import Validator
 
 
 class TestValidator(unittest.TestCase):
@@ -25,8 +25,8 @@ class TestValidator(unittest.TestCase):
 
     def test_validate_reference(self) -> None:
         self.assertTrue(Validator.validate_reference("xqunqcc.1m30s"))
-        self.assertTrue(Validator.validate_reference("abc123.xyz789"))
-        self.assertTrue(Validator.validate_reference("TEST.123"))
+        self.assertTrue(Validator.validate_reference("abc123.20s"))
+        self.assertTrue(Validator.validate_reference("test.33s"))
 
         self.assertFalse(Validator.validate_reference("ref1.ref2.ref3"))
         self.assertFalse(Validator.validate_reference("single"))
