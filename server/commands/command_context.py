@@ -1,5 +1,5 @@
 from server.di import Container
-from server.services.validation_service import Validator
+from server.services.validation_service import ValidationService
 
 MIN_PART = 2
 
@@ -30,7 +30,7 @@ class CommandContext:
             raise ValueError("Invalid format. Expected: request_id|action[|params]")
 
         request_id = parts[0]
-        if not Validator.validate_request_id(request_id):
+        if not ValidationService.validate_request_id(request_id):
             raise ValueError("Invalid request_id. Must be 7 lowercase letters (a-z)")
 
         action = parts[1]

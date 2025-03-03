@@ -1,7 +1,7 @@
 from re import compile
 
 
-class Validator:
+class ValidationService:
     REQUEST_ID_PATTERN = compile(r"^[a-z]{7}$")
     ALPHANUMERIC_PATTERN = compile(r"^[a-zA-Z0-9]+$")
 

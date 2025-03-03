@@ -10,7 +10,7 @@ from server.commands.discussion_commands import (
     ListDiscussionsCommand,
 )
 from server.di import Container
-from server.services.validation_service import Validator
+from server.services.validation_service import ValidationService
 from tests.conftest import TEST_PEER_ID
 
 
@@ -47,6 +47,23 @@ async def test_create_discussion_validates_params(container: Container) -> None:
             ),
         ).execute()
 
+    with pytest.raises(ValueError):
+        await CreateDiscussionCommand(
+            CommandContext.from_line(container, "ykkngzx|CREATE_DISCUSSION|iofetzv.0s")
+        ).execute()
+
+    with pytest.raises(ValueError):
+        await CreateDiscussionCommand(
+            CommandContext.from_line(container, "ykkngzx|CREATE_DISCUSSION|iofetzv.0s|")
+        ).execute()
+
+    with pytest.raises(ValueError):
+        await CreateDiscussionCommand(
+            CommandContext.from_line(
+                container, "ykkngzx|CREATE_DISCUSSION|iofetzv|zaaa"
+            )
+        ).execute()
+
 
 async def test_create_discussion_executes(container: Container) -> None:
     context = CommandContext(
@@ -58,8 +75,8 @@ async def test_create_discussion_executes(container: Container) -> None:
     assert len(parts) == 2
     assert parts[0] == "abcdefg"
 
-    assert Validator.validate_request_id(parts[0])
-    assert Validator.validate_alphanumeric(parts[1])
+    assert ValidationService.validate_request_id(parts[0])
+    assert ValidationService.validate_alphanumeric(parts[1])
 
 
 async def test_create_reply_executes(container: Container) -> None:
@@ -223,27 +240,3 @@ async def test_list_discussion_executes(container: Container) -> None:
     await ListDiscussionsCommand(
         CommandContext(container, "abcdefg", [], TEST_PEER_ID),
     ).execute()
-
-    # with pytest.raises(ValueError):
-    #     CommandContext.from_line(container, "cadlsdo|INVALID")
-
-    # with pytest.raises(ValueError):
-    #     CommandContext.from_line(container, "abcdefg|SIGN_IN")
-
-    # with pytest.raises(ValueError):
-    #     CommandContext.from_line(container, "abcdefg|SIGN_IN|invalid@id")
-
-    # with pytest.raises(ValueError):
-    #     CommandContext.from_line(container, "abcdefg|SIGN_IN|invalid id")
-
-    # with pytest.raises(ValueError):
-    #     CommandContext.from_line(container, "abcdefg|SIGN_IN|")
-
-    # with pytest.raises(ValueError):
-    #     CommandContext.from_line(container, "ykkngzx|CREATE_DISCUSSION|iofetzv.0s")
-
-    # with pytest.raises(ValueError):
-    #     CommandContext.from_line(container, "ykkngzx|CREATE_DISCUSSION|iofetzv.0s|")
-
-    # with pytest.raises(ValueError):
-    #     CommandContext.from_line(container, "ykkngzx|CREATE_DISCUSSION|iofetzv|zaaa")

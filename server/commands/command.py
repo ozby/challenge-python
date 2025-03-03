@@ -3,8 +3,6 @@ from typing import final
 
 from server.commands.command_context import CommandContext
 
-MIN_PART = 2
-
 
 class Command:
     def __init__(self, context: CommandContext):

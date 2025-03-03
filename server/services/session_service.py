@@ -1,5 +1,5 @@
-from datetime import datetime
 import logging
+from datetime import datetime
 from typing import Any
 
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -14,7 +14,11 @@ class SessionService:
 
     async def set(self, peer_id: str, user_id: str) -> None:
         logging.info(f"Setting session for {peer_id} to {user_id}")
-        session_doc = {"peer_id": peer_id, "user_id": user_id, "created_at": datetime.now()}
+        session_doc = {
+            "peer_id": peer_id,
+            "user_id": user_id,
+            "created_at": datetime.now(),
+        }
         await self.sessions.update_one(
             {"peer_id": peer_id}, {"$set": session_doc}, upsert=True
         )

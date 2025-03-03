@@ -1,6 +1,6 @@
 from server.commands.command import Command
 from server.response import Response
-from server.services.validation_service import Validator
+from server.services.validation_service import ValidationService
 
 
 class CreateDiscussionCommand(Command):
@@ -10,7 +10,7 @@ class CreateDiscussionCommand(Command):
             raise ValueError("action requires two parameters")
 
         reference, comment = self.context.params[0], self.context.params[1]
-        if not Validator.validate_reference(reference):
+        if not ValidationService.validate_reference(reference):
             raise ValueError("reference must be period-delimited alphanumeric")
 
         if len(comment) >= 250:

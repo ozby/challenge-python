@@ -42,12 +42,14 @@ class Server:
                     try:
                         notification = change["fullDocument"]
                         logger.info(f"notification: {notification}")
-                        recipient_id = change["fullDocument"]["recipient_id"]
-                        peer_id = self.session_service.get_by_user_id(recipient_id)
+                        recipient_id = notification["recipient_id"]
+                        peer_id = await self.session_service.get_by_user_id(
+                            recipient_id
+                        )
                         if peer_id is None:
                             logger.info(f"User is offline: {recipient_id}")
                             continue
-                        peer_writer = self._peer_writers.get(peer_id)  # type: ignore
+                        peer_writer = self._peer_writers.get(peer_id)
                         if peer_writer is None:
                             logger.info(f"User is offline: {peer_id}")
                             continue
@@ -59,9 +61,9 @@ class Server:
                         logger.info(f"Notification sent to {peer_id}")
                         await peer_writer.drain()
                     except Exception as e:
-                        logger.error(f"Error sending notification to {peer_id}: {e}")
+                        logger.error(f"Error sending notification: {e}")
         except Exception as e:
-            logger.error(f"{e}")
+            logger.error(f"Error watching notifications: {e}")
 
     async def _send_to_peer(self, peer_id: str, message: str) -> None:
         """Send a message to a specific peer if they are connected."""

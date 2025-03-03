@@ -1,6 +1,6 @@
 from server.commands.command import Command
 from server.response import Response
-from server.services.validation_service import Validator
+from server.services.validation_service import ValidationService
 
 
 class SignInCommand(Command):
@@ -9,7 +9,7 @@ class SignInCommand(Command):
         if len(self.context.params) != 1:
             raise ValueError("SIGN_IN action requires exactly one parameter")
 
-        if not Validator.validate_alphanumeric(self.context.params[0]):
+        if not ValidationService.validate_alphanumeric(self.context.params[0]):
             raise ValueError("client_id must be alphanumeric")
 
     async def _execute_impl(self) -> str:

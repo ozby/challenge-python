@@ -1,1 +1,1 @@
-"""Test package for the server application."""
+"""Test package initialization."""

@@ -107,3 +107,6 @@ def test_parse_failures(container: Container) -> None:
 
     with pytest.raises(ValueError):
         CommandContext.from_line(container, "abcdefg")
+
+    # with pytest.raises(ValueError):
+    #     CommandContext.from_line(container, "cadlsdo|INVALID")

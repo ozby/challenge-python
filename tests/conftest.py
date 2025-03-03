@@ -2,7 +2,9 @@ from collections.abc import AsyncGenerator, Generator
 
 import pytest
 from dependency_injector import providers
-from mongomock_motor import AsyncMongoMockClient  # type: ignore
+from mongomock_motor import (  # type: ignore
+    AsyncMongoMockClient,
+)
 
 from server.di import Container
 
