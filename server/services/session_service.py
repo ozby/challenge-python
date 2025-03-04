@@ -2,15 +2,14 @@ import logging
 from datetime import datetime
 from typing import Any
 
-from motor.motor_asyncio import AsyncIOMotorClient
+from motor.motor_asyncio import AsyncIOMotorDatabase
 
 from server.entities.session import Session
 
 
 class SessionService:
-    def __init__(self, mongo_client: AsyncIOMotorClient[Any]) -> None:
-        self.db = mongo_client.synthesia_db
-        self.sessions = self.db.sessions
+    def __init__(self, db: AsyncIOMotorDatabase[Any]) -> None:
+        self.sessions = db.sessions
 
     async def set(self, peer_id: str, user_id: str) -> None:
         logging.info(f"Setting session for {peer_id} to {user_id}")

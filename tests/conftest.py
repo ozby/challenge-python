@@ -19,7 +19,14 @@ def container() -> Generator[Container, None, None]:
         AsyncMongoMockClient
     )
 
+    db = providers.Singleton(
+        lambda client, db_name: client[db_name],
+        mongo_client,
+        container.config().get("db_name"),
+    )
+
     container.mongo_client.override(mongo_client)
+    container.db.override(db)
 
     yield container
 
@@ -28,8 +35,7 @@ def container() -> Generator[Container, None, None]:
 
 @pytest.fixture(autouse=True)
 async def mock_mongo(container: Container) -> AsyncGenerator[None, None]:
-    mongo_client = container.mongo_client()
-    db = mongo_client.synthesia_db
+    db = container.db()
     await db.discussions.delete_many({})
     await db.notifications.delete_many({})
     await db.sessions.delete_many({})

@@ -210,7 +210,7 @@ async def test_list_discussion_validates_params(container: Container) -> None:
             "replybb",
             [
                 created_discussion_id,
-                'I used something called "Synthesia", it\'s pretty cool!',
+                'I used something called "ozbys amazing tool", it\'s pretty cool!',
             ],
             TEST_PEER_ID,
         )

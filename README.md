@@ -42,7 +42,7 @@ The server will start listening on port 8989 by default. You can test it using n
 nc -v localhost 8989
 ```
 
-Type any message and press enter
+Type one of the commands (can be found at the beginning of this README) and press enter
 
 ## Development
 

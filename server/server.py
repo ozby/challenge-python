@@ -28,13 +28,13 @@ class Server:
         self.session_service = self.container.session_service()
         self.notification_service = self.container.notification_service()
         self.mongo_client = self.container.mongo_client()
+        self.db = self.mongo_client
 
     async def _watch_notifications(self) -> None:
         """Single watcher for all notifications"""
         try:
             logger.info("watching notifications")
-            client = self.mongo_client
-            collection = client.synthesia_db.notifications
+            collection = self.db.notifications
             async with collection.watch(
                 [{"$match": {"operationType": "insert"}}]
             ) as stream:
@@ -121,7 +121,7 @@ class Server:
         self._notification_task = asyncio.create_task(self._watch_notifications())
 
         # For testing, the container might not have a config attribute
-        db_name = getattr(self.container, "config", {}).get("db_name", "synthesia_db")
+        db_name = self.container.config.db_name
         logger.info(f"Using database: {db_name}")
 
         logger.info("Server starting on %s:%d", self.host, self.port)

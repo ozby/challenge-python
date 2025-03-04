@@ -4,7 +4,7 @@ import string
 from datetime import datetime
 from typing import Any
 
-from motor.motor_asyncio import AsyncIOMotorClient
+from motor.motor_asyncio import AsyncIOMotorDatabase
 
 from server.entities.discussion import Discussion, Reply
 from server.services.notification_service import NotificationService
@@ -15,10 +15,10 @@ class DiscussionService:
 
     def __init__(
         self,
-        mongo_client: AsyncIOMotorClient[Any],
+        db: AsyncIOMotorDatabase[Any],
         notification_service: NotificationService,
     ) -> None:
-        self.db = mongo_client.synthesia_db
+        self.db = db
         self.discussions = self.db.discussions
         self.notification_service = notification_service
 

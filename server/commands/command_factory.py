@@ -9,7 +9,6 @@ from server.commands.discussion_commands import (
     GetDiscussionCommand,
     ListDiscussionsCommand,
 )
-from server.di import Container
 
 
 class CommandFactory:
@@ -22,9 +21,6 @@ class CommandFactory:
         "GET_DISCUSSION": GetDiscussionCommand,
         "LIST_DISCUSSIONS": ListDiscussionsCommand,
     }
-
-    def __init__(self, container: Container):
-        self.container = container
 
     @classmethod
     def create_command(cls, context: CommandContext) -> Command:

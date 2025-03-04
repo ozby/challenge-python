@@ -16,7 +16,7 @@ class Container(containers.DeclarativeContainer):
     config = providers.Configuration(
         default={
             "mongo_uri": "mongodb://localhost:27017",
-            "db_name": "synthesia_db",
+            "db_name": "test_db",
         }
     )
 
@@ -28,14 +28,16 @@ class Container(containers.DeclarativeContainer):
         ),
     )
 
-    notification_service = providers.Singleton(
-        NotificationService, mongo_client=mongo_client
+    db = providers.Singleton(
+        lambda client, db_name: client[db_name], mongo_client, config.db_name
     )
 
-    session_service = providers.Singleton(SessionService, mongo_client=mongo_client)
+    notification_service = providers.Singleton(NotificationService, db)
+
+    session_service = providers.Singleton(SessionService, db)
 
     discussion_service = providers.Singleton(
         DiscussionService,
-        mongo_client=mongo_client,
+        db,
         notification_service=notification_service,
     )
